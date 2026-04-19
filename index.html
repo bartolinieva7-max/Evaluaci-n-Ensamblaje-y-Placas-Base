@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Evaluación · Ensamblaje y Placas Base</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #eef2f7;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 1.2rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .evaluation-container {
+      max-width: 950px;
+      width: 100%;
+      margin: 0 auto;
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 20px 40px -12px rgba(0,20,40,0.2);
+      padding: 1.8rem 1.8rem 2rem;
+      border: 1px solid #cbd6e6;
+    }
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: #1e3a5f;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 3px solid #9bb7d4;
+      padding-bottom: 0.7rem;
+      margin-bottom: 1.2rem;
+    }
+    h1 small {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #4a627a;
+      margin-left: auto;
+    }
+    .info-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      background: #e1e9f2;
+      padding: 0.7rem 1.2rem;
+      border-radius: 60px;
+    }
+    .score-box {
+      background: #1e3a5f;
+      color: white;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .badge {
+      background: white;
+      color: #1e3a5f;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .questions-area {
+      margin: 1.5rem 0 1rem;
+    }
+    .question-card {
+      background: #fafcff;
+      border-radius: 1.2rem;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.3rem;
+      border: 1px solid #d0dfee;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+    }
+    .question-header {
+      display: flex;
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #1e3a5f;
+      font-size: 1rem;
+      align-items: baseline;
+    }
+    .q-num {
+      background: #1e3a5f;
+      color: white;
+      border-radius: 30px;
+      padding: 0.15rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin: 0.5rem 0 0.8rem;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      background: #ffffff;
+      border: 1.5px solid #d7e2ee;
+      border-radius: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .option:hover {
+      background: #eef4fc;
+      border-color: #7a9bcb;
+    }
+    .option input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.2rem;
+      height: 1.2rem;
+      border: 2px solid #6f8db0;
+      border-radius: 50%;
+      margin-top: 0.1rem;
+      cursor: pointer;
+      background: white;
+      flex-shrink: 0;
+    }
+    .option input[type="radio"]:checked {
+      background-color: #1e6f5c;
+      border-color: #1e6f5c;
+      box-shadow: inset 0 0 0 3px white;
+    }
+    .option label {
+      flex: 1;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #1f2e3f;
+      line-height: 1.4;
+    }
+    .feedback {
+      margin-top: 0.8rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0.8rem;
+      font-size: 0.85rem;
+      background: #f7f9fc;
+      border-left: 5px solid;
+      color: #2a405c;
+    }
+    .feedback.correct {
+      border-left-color: #2b8c5e;
+      background: #e9f6ef;
+    }
+    .feedback.incorrect {
+      border-left-color: #c13b3b;
+      background: #ffeeee;
+    }
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1.8rem 0 0.5rem;
+    }
+    .btn {
+      border: none;
+      background: #dbe4ed;
+      color: #1e3a5f;
+      font-weight: 600;
+      padding: 0.75rem 1.8rem;
+      border-radius: 60px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid #b8cade;
+    }
+    .btn-primary {
+      background: #1e3a5f;
+      color: white;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: #102b44;
+      transform: scale(1.02);
+    }
+    .btn-secondary {
+      background: #eef3f9;
+    }
+    .btn-secondary:hover {
+      background: #dae2ee;
+    }
+    .btn-success {
+      background: #2b8c5e;
+      color: white;
+      border: none;
+    }
+    .btn-success:hover {
+      background: #1f7049;
+    }
+    .footer-note {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #6e8898;
+    }
+    @media (max-width: 600px) {
+      body { padding: 0.8rem; }
+      .evaluation-container { padding: 1.2rem; }
+      h1 { font-size: 1.5rem; flex-wrap: wrap; }
+      .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="evaluation-container">
+  <h1>
+    🛠️ Evaluación · Ensamblaje y Placas Base
+    <small>10 preguntas aleatorias</small>
+  </h1>
+  <div class="info-bar">
+    <span class="badge">🎲 40 preguntas en el banco</span>
+    <span class="score-box" id="scoreDisplay">0 / 10</span>
+  </div>
+
+  <div id="questionsArea" class="questions-area">
+    <!-- Las preguntas se renderizan aquí -->
+  </div>
+
+  <div class="action-buttons">
+    <button id="checkBtn" class="btn btn-success">✅ Corregir evaluación</button>
+    <button id="newTestBtn" class="btn btn-primary">🔄 Nueva evaluación (siguiente alumna)</button>
+  </div>
+  <div class="footer-note">
+    ✔️ Cada pregunta correcta suma 1 punto. Máximo 10. Cada nueva prueba mezcla el banco.
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- BANCO DE PREGUNTAS UNIFICADO (40 preguntas) ----------
+    // Bloque 1: 20 preguntas de "Ensamblaje de PC de Alto Rendimiento"
+    // Bloque 2: 20 preguntas de "Placas Base y Componentes"
+
+    const bank = [];
+
+    // ===== BLOQUE 1: ENSAMBLAJE (20 preguntas) =====
+    const ensamblajeQuestions = [
+      {
+        text: "¿Cuál es uno de los beneficios clave de optar por un ensamblaje personalizado en lugar de uno preensamblado?",
+        options: ["Aumentar los márgenes comerciales de los fabricantes.", "Optimización de costos al invertir el presupuesto directamente en potencia bruta.", "Limitar el rendimiento para que sea igual en todos los usuarios."],
+        correct: "B",
+        explanation: "El ensamblaje personalizado evita sobreprecios comerciales y permite asignar el presupuesto a componentes de mayor rendimiento."
+      },
+      {
+        text: "¿Qué factores definen el rendimiento real de un procesador (CPU) moderno?",
+        options: ["Únicamente el número de núcleos.", "La marca del fabricante (Intel o AMD).", "La velocidad de reloj (GHz), el IPC y la memoria caché (L1, L2, L3)."],
+        correct: "C",
+        explanation: "Velocidad, IPC y caché son clave. La marca no define el rendimiento por sí sola."
+      },
+      {
+        text: "En el mercado de 2024, ¿qué procesador lidera el segmento de AMD mencionado en las fuentes?",
+        options: ["Core i9-14900K.", "Ryzen 9 7950X3D.", "DDR5 6000MHz."],
+        correct: "B",
+        explanation: "Ryzen 9 7950X3D es el líder de AMD para gaming y productividad."
+      },
+      {
+        text: "¿Qué mejora técnica ofrece la memoria DDR5 en comparación con la DDR4?",
+        options: ["Hasta un 50% más de ancho de banda.", "Una mayor latencia para procesar datos más lento.", "Es compatible físicamente con ranuras DDR4."],
+        correct: "A",
+        explanation: "DDR5 ofrece mayor ancho de banda y eficiencia energética, pero no es físicamente compatible con DDR4."
+      },
+      {
+        text: "Para gaming avanzado y edición profesional, ¿cuál es la capacidad de RAM recomendada?",
+        options: ["8GB en un solo módulo.", "16GB como estándar mínimo.", "32GB en configuración Dual o Quad-Channel."],
+        correct: "C",
+        explanation: "32GB en dual/quad-channel proporciona el margen necesario para tareas exigentes."
+      },
+      {
+        text: "¿Cuál es la principal ventaja de una unidad NVMe PCIe Gen 5 sobre un SSD SATA?",
+        options: ["Ofrece almacenamiento masivo a bajo costo.", "Duplica la velocidad de Gen 4, alcanzando hasta 7 GB/s.", "Utiliza cables SATA para conectarse."],
+        correct: "B",
+        explanation: "PCIe Gen 5 duplica la velocidad de Gen 4, ideal para transferencias rápidas."
+      },
+      {
+        text: "En la 'Trinidad del Rendimiento', ¿qué función cumple la memoria RAM?",
+        options: ["Es 'El Motor' que procesa las instrucciones.", "Es 'La Bóveda' donde se guardan los archivos permanentemente.", "Es 'El Taller' que mantiene al procesador abastecido de instrucciones."],
+        correct: "C",
+        explanation: "La RAM es el taller de trabajo rápido que alimenta al CPU."
+      },
+      {
+        text: "¿Qué medida de seguridad es 'crítica' para evitar destruir componentes sensibles durante el ensamblaje?",
+        options: ["Usar guantes de cocina.", "Controlar la electricidad estática con una pulsera antiestática o tocando metal a tierra.", "Ensamblar el equipo sobre una alfombra de lana."],
+        correct: "B",
+        explanation: "La descarga electrostática (ESD) puede dañar permanentemente los componentes."
+      },
+      {
+        text: "Al instalar el procesador en la placa base, ¿qué se debe identificar para su correcta posición?",
+        options: ["El logotipo de la marca.", "El triángulo de alineación.", "El número de serie en la parte trasera."],
+        correct: "B",
+        explanation: "El triángulo en la esquina del CPU y el socket indica la orientación correcta."
+      },
+      {
+        text: "¿Por qué es fundamental instalar el disipador o bloque de refrigeración inmediatamente después del CPU?",
+        options: ["Para que la placa base pese más y no se mueva.", "Para mantener temperaturas óptimas bajo carga y evitar daños térmicos.", "Porque el disipador sostiene al CPU en su lugar mediante pegamento."],
+        correct: "B",
+        explanation: "Sin refrigeración, el CPU puede sobrecalentarse en segundos."
+      },
+      {
+        text: "¿En qué ranuras se deben instalar generalmente los módulos RAM para aprovechar el 'Dual-Channel'?",
+        options: ["En las ranuras 1 y 2.", "En cualquier ranura disponible al azar.", "En los canales primarios, generalmente las ranuras 2 y 4."],
+        correct: "C",
+        explanation: "Las ranuras 2 y 4 (o 1 y 3 según el manual) activan el modo Dual-Channel."
+      },
+      {
+        text: "¿Qué precaución se debe tener al atornillar la placa base al chasis?",
+        options: ["Apretar los tornillos con la máxima fuerza posible.", "No apretar en exceso para evitar fracturar el PCB.", "No usar tornillos, solo cinta adhesiva."],
+        correct: "B",
+        explanation: "Apretar en exceso puede dañar las pistas de la placa base."
+      },
+      {
+        text: "¿Hacia dónde debe apuntar el ventilador de la Fuente de Alimentación (PSU) al instalarla?",
+        options: ["Hacia el interior del chasis para calentar los componentes.", "Hacia la rejilla de ventilación exterior para garantizar la toma de aire fresco.", "Debe estar tapado por cables para reducir el ruido."],
+        correct: "B",
+        explanation: "El ventilador de la PSU debe tomar aire fresco del exterior."
+      },
+      {
+        text: "¿Qué ranura PCIe es la recomendada para instalar la tarjeta gráfica (GPU)?",
+        options: ["La ranura más inferior para que tenga más espacio.", "La ranura PCIe x16 superior (más cercana al CPU).", "Cualquier ranura pequeña de expansión."],
+        correct: "B",
+        explanation: "La ranura x16 superior ofrece el máximo ancho de banda."
+      },
+      {
+        text: "¿Cuál es el objetivo principal de realizar una gestión de cableado limpia?",
+        options: ["Que el PC se vea bonito para fotos.", "Mejorar dramáticamente el flujo de aire interno y facilitar el mantenimiento.", "Evitar que los cables se salgan de la caja."],
+        correct: "B",
+        explanation: "Un buen cableado mejora la refrigeración y facilita futuras modificaciones."
+      },
+      {
+        text: "Al encender el PC por primera vez, ¿qué acción es necesaria para que la RAM DDR5 alcance su verdadera frecuencia?",
+        options: ["No hacer nada, el sistema lo hace solo.", "Activar el perfil EXPO (AMD) o XMP (Intel) en la BIOS.", "Formatear el disco duro inmediatamente."],
+        correct: "B",
+        explanation: "EXPO/XMP permiten que la RAM funcione a su velocidad nominal."
+      },
+      {
+        text: "¿Qué software se recomienda específicamente para llevar el procesador al límite y monitorear temperaturas?",
+        options: ["Memtest86.", "Prime95.", "Solitario de Windows."],
+        correct: "B",
+        explanation: "Prime95 genera una carga extrema para probar estabilidad y temperaturas."
+      },
+      {
+        text: "¿Para qué sirve el programa Memtest86 según el protocolo de pruebas?",
+        options: ["Para medir los FPS en juegos.", "Para verificar exhaustivamente que no haya errores de hardware en los módulos de RAM.", "Para actualizar la BIOS automáticamente."],
+        correct: "B",
+        explanation: "Memtest86 detecta errores en la memoria RAM."
+      },
+      {
+        text: "¿Cuál es una tarea de mantenimiento constante mencionada para asegurar el flujo de aire?",
+        options: ["Limpiar los filtros de polvo regularmente.", "Dejar la tapa lateral abierta siempre.", "Cambiar la fuente de alimentación cada mes."],
+        correct: "A",
+        explanation: "Los filtros de polvo limpios mantienen un flujo de aire adecuado."
+      },
+      {
+        text: "¿Qué concepto describe la selección de piezas que NO se complementan, haciendo que una ralentice a las demás?",
+        options: ["Optimización de costos.", "Cuello de botella.", "Trinidad del Rendimiento."],
+        correct: "B",
+        explanation: "Un cuello de botella ocurre cuando un componente limita el rendimiento de los demás."
+      }
+    ];
+
+    ensamblajeQuestions.forEach((q, idx) => {
+      bank.push({
+        id: `ens-${idx}`,
+        text: q.text,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      });
+    });
+
+    // ===== BLOQUE 2: PLACAS BASE Y COMPONENTES (20 preguntas) =====
+    const placasQuestions = [
+      {
+        text: "¿Qué significan las siglas ATX en el contexto de las placas base?",
+        options: ["Advanced Technology Extended.", "Automated Technical X-link.", "All-purpose Terminal eXchange."],
+        correct: "A",
+        explanation: "ATX (Advanced Technology Extended) es un estándar de factor de forma introducido por Intel."
+      },
+      {
+        text: "¿Cuál es la función principal de la placa base en un ordenador?",
+        options: ["Únicamente proporcionar energía a los ventiladores.", "Actuar como el eje central que conecta y permite la comunicación entre todos los componentes.", "Almacenar de forma permanente todos los archivos del usuario."],
+        correct: "B",
+        explanation: "La placa base es el sistema nervioso que interconecta todos los componentes."
+      },
+      {
+        text: "¿Dónde se ubica generalmente el socket del CPU en la placa base?",
+        options: ["En el borde inferior, cerca de los puertos SATA.", "En el panel trasero de conexiones.", "En el centro de la placa base."],
+        correct: "C",
+        explanation: "El socket del CPU se ubica en la zona central para facilitar las conexiones."
+      },
+      {
+        text: "¿Qué determina si un procesador puede instalarse físicamente en una placa base específica?",
+        options: ["El tipo de socket y el chipset.", "El color de la placa base.", "La cantidad de puertos USB disponibles."],
+        correct: "A",
+        explanation: "El socket debe coincidir físicamente y el chipset define la compatibilidad lógica."
+      },
+      {
+        text: "¿Cuál es una ventaja principal de la memoria DDR5 sobre la DDR4?",
+        options: ["Es más barata y utiliza tecnología más antigua.", "Ofrece mejoras significativas en ancho de banda y eficiencia energética.", "No requiere un CPU compatible para funcionar."],
+        correct: "B",
+        explanation: "DDR5 proporciona mayor ancho de banda y mejor eficiencia energética."
+      },
+      {
+        text: "¿Qué componente actúa como un puente coordinando el flujo de datos entre el CPU, la RAM y las tarjetas de expansión?",
+        options: ["El Chipset.", "El conector Ethernet.", "El ventilador del sistema."],
+        correct: "A",
+        explanation: "El chipset es el centro de control que gestiona la comunicación."
+      },
+      {
+        text: "¿Para qué se utiliza específicamente la ranura PCI-e x16?",
+        options: ["Principalmente para tarjetas gráficas (GPU) de alto rendimiento.", "Para conectar teclados y ratones antiguos.", "Solo para conectar unidades de disquete."],
+        correct: "A",
+        explanation: "PCIe x16 ofrece el mayor ancho de banda, ideal para GPUs."
+      },
+      {
+        text: "¿Qué diferencia principal hay entre el almacenamiento SATA y el M.2 NVMe?",
+        options: ["SATA es más rápido que M.2 NVMe.", "M.2 NVMe utiliza el protocolo NVMe diseñado para aprovechar al máximo los SSD.", "Los puertos SATA son más pequeños que las ranuras M.2."],
+        correct: "B",
+        explanation: "NVMe aprovecha los carriles PCIe para velocidades mucho mayores que SATA."
+      },
+      {
+        text: "En el panel trasero, ¿cómo se identifica normalmente la salida de audio para altavoces?",
+        options: ["Color rosa.", "Color azul.", "Color verde."],
+        correct: "C",
+        explanation: "Verde = salida de audio (altavoces/auriculares). Rosa = micrófono; Azul = entrada de línea."
+      },
+      {
+        text: "¿Cuál es la función del conector de alimentación ATX en la placa base?",
+        options: ["Conectar el botón de encendido del gabinete.", "Proporcionar la energía necesaria para que la placa base funcione.", "Permitir la conexión de redes inalámbricas Wi-Fi."],
+        correct: "B",
+        explanation: "El conector ATX de 24 pines suministra energía a la placa base."
+      },
+      {
+        text: "Según la guía de Asus, ¿para qué perfil de usuario es ideal la Asus Prime H610?",
+        options: ["Entusiastas del overclocking y gamers extremos.", "Uso escolar, tareas de oficina y juegos muy casuales.", "Estaciones de trabajo profesionales con múltiples GPUs."],
+        correct: "B",
+        explanation: "La H610 es una placa básica para presupuestos ajustados y tareas ligeras."
+      },
+      {
+        text: "¿Qué ventaja ofrece la Asus Prime A620 en comparación con la H610?",
+        options: ["Utiliza un socket AM5 compatible con los últimos procesadores Ryzen.", "Es más económica y utiliza tecnología DDR4.", "Incluye iluminación RGB en toda la placa."],
+        correct: "A",
+        explanation: "A620 usa socket AM5 y soporta DDR5, compatible con Ryzen 7000."
+      },
+      {
+        text: "¿Qué característica destaca de la placa TUF Gaming B550 Plus?",
+        options: ["Solo soporta procesadores Intel de 14va generación.", "Posee funciones avanzadas como capacidad de overclock y Wi-Fi integrado.", "No tiene ranuras para almacenamiento M.2."],
+        correct: "B",
+        explanation: "La B550 Plus es una placa AM4 robusta con overclocking y Wi-Fi."
+      },
+      {
+        text: "¿Cuál es una de las tecnologías más nuevas incorporadas en la Asus Rog Strix X870-A?",
+        options: ["Soporte para PCI Express 5.0.", "Conector para disqueteras de 3.5 pulgadas.", "Solo soporta memorias DDR3."],
+        correct: "A",
+        explanation: "PCIe 5.0 es característico de placas de alta gama actuales."
+      },
+      {
+        text: "¿Qué procesador se recomienda para aprovechar al máximo una placa Rog Strix X870-E enfocada en juegos?",
+        options: ["Intel Core i3 de 10ma generación.", "AMD Ryzen 7 7800X3D.", "Cualquier procesador Celeron antiguo."],
+        correct: "B",
+        explanation: "El Ryzen 7 7800X3D es óptimo para gaming con socket AM5."
+      },
+      {
+        text: "¿Qué función cumple el panel frontal de la placa base?",
+        options: ["Conectar los botones de encendido, reinicio y LEDs de la caja.", "Conectar la tarjeta de video externa.", "Refrigerar el chipset mediante ventiladores."],
+        correct: "A",
+        explanation: "El panel frontal conecta los controles e indicadores del gabinete."
+      },
+      {
+        text: "¿Por qué es importante considerar la capacidad máxima de RAM en una placa base?",
+        options: ["Porque determina cuántos ventiladores se pueden instalar.", "Porque limita la cantidad de memoria que se puede instalar para tareas futuras.", "Porque influye en la velocidad del puerto Ethernet."],
+        correct: "B",
+        explanation: "La capacidad máxima de RAM define el límite de ampliación futura."
+      },
+      {
+        text: "¿Qué ventaja ofrece invertir en una placa base de mayor calidad según la fuente de video?",
+        options: ["Aumenta automáticamente los FPS de 60 a 120.", "Proporciona mayor estabilidad, conectividad y durabilidad a largo plazo.", "Hace que el internet sea 10 veces más rápido."],
+        correct: "B",
+        explanation: "Una placa base de calidad es una base sólida para futuras actualizaciones."
+      },
+      {
+        text: "¿Cuál es la diferencia entre los tipos de socket LGA y AM4/AM5?",
+        options: ["LGA es utilizado por Intel y AM4/AM5 por AMD.", "No hay diferencia, son totalmente compatibles entre sí.", "LGA es solo para laptops y AM4 para computadoras de escritorio."],
+        correct: "A",
+        explanation: "Intel usa LGA (Land Grid Array); AMD usa PGA (Pin Grid Array) en AM4 y LGA en AM5."
+      },
+      {
+        text: "¿Para qué sirven los conectores USB internos en la placa base?",
+        options: ["Para conectar exclusivamente el monitor.", "Para proporcionar puertos USB adicionales en la parte frontal de la caja.", "Para conectar la fuente de poder principal."],
+        correct: "B",
+        explanation: "Los USB internos alimentan los puertos frontales del gabinete."
+      }
+    ];
+
+    placasQuestions.forEach((q, idx) => {
+      bank.push({
+        id: `plac-${idx}`,
+        text: q.text,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      });
+    });
+
+    // ---------- CONFIGURACIÓN DE LA EVALUACIÓN ----------
+    const TOTAL_QUESTIONS = 10;               // preguntas por evaluación
+    let currentQuestions = [];                // array de objetos pregunta seleccionados
+    let userAnswers = new Array(TOTAL_QUESTIONS).fill(null); // 'A','B','C' o null
+
+    const questionsArea = document.getElementById('questionsArea');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const checkBtn = document.getElementById('checkBtn');
+    const newTestBtn = document.getElementById('newTestBtn');
+
+    // Función para seleccionar N preguntas aleatorias sin repetición
+    function shufflePickN(n) {
+      const indices = Array.from({ length: bank.length }, (_, i) => i);
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      return indices.slice(0, n).map(idx => bank[idx]);
+    }
+
+    function resetAnswers() {
+      userAnswers = new Array(TOTAL_QUESTIONS).fill(null);
+    }
+
+    function generateNewTest() {
+      currentQuestions = shufflePickN(TOTAL_QUESTIONS);
+      resetAnswers();
+      renderQuestions();
+      updateScoreDisplay(0);
+    }
+
+    function updateScoreDisplay(scoreValue = null) {
+      if (scoreValue === null) {
+        let correct = 0;
+        for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+          if (userAnswers[i] && userAnswers[i] === currentQuestions[i].correct) correct++;
+        }
+        scoreDisplay.textContent = `${correct} / 10`;
+      } else {
+        scoreDisplay.textContent = `${scoreValue} / 10`;
+      }
+    }
+
+    function renderQuestions() {
+      if (!currentQuestions.length) return;
+      let html = '';
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const q = currentQuestions[i];
+        const selected = userAnswers[i];
+        const letters = ['A','B','C'];
+        
+        let optionsHtml = '';
+        q.options.forEach((optText, optIdx) => {
+          const letter = letters[optIdx];
+          const checked = (selected === letter) ? 'checked' : '';
+          optionsHtml += `
+            <div class="option" data-qidx="${i}" data-letter="${letter}">
+              <input type="radio" name="q${i}" value="${letter}" id="q${i}_${letter}" ${checked}>
+              <label for="q${i}_${letter}"><strong>${letter})</strong> ${optText}</label>
+            </div>
+          `;
+        });
+
+        html += `
+          <div class="question-card" id="card-${i}">
+            <div class="question-header">
+              <span class="q-num">Pregunta ${i+1}</span>
+              <span>${q.text}</span>
+            </div>
+            <div class="options">
+              ${optionsHtml}
+            </div>
+            <div class="feedback" id="fb-${i}"></div>
+          </div>
+        `;
+      }
+      questionsArea.innerHTML = html;
+
+      // Asignar eventos a los radios y opciones
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const radios = document.querySelectorAll(`input[name="q${i}"]`);
+        radios.forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const val = e.target.value;
+            userAnswers[i] = val;
+            const fbDiv = document.getElementById(`fb-${i}`);
+            if (fbDiv) {
+              fbDiv.innerHTML = '';
+              fbDiv.className = 'feedback';
+            }
+            updateScoreDisplay();
+          });
+        });
+        const optionDivs = document.querySelectorAll(`.option[data-qidx="${i}"]`);
+        optionDivs.forEach(div => {
+          div.addEventListener('click', (e) => {
+            const radio = div.querySelector('input[type="radio"]');
+            if (radio && !radio.checked) {
+              radio.checked = true;
+              const letter = div.getAttribute('data-letter');
+              userAnswers[i] = letter;
+              const fbDiv = document.getElementById(`fb-${i}`);
+              if (fbDiv) { fbDiv.innerHTML = ''; fbDiv.className = 'feedback'; }
+              updateScoreDisplay();
+            }
+          });
+        });
+      }
+      updateScoreDisplay();
+    }
+
+    function correctEvaluation() {
+      let correctCount = 0;
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const q = currentQuestions[i];
+        const userAns = userAnswers[i];
+        const fbDiv = document.getElementById(`fb-${i}`);
+        if (!fbDiv) continue;
+        
+        const isCorrect = (userAns && userAns === q.correct);
+        if (isCorrect) correctCount++;
+        
+        const correctLetter = q.correct;
+        const correctText = q.options[['A','B','C'].indexOf(correctLetter)];
+        
+        let fbHtml = '';
+        if (!userAns) {
+          fbHtml = `<span style="color:#b85e00;">⚠️ Sin responder. La respuesta correcta es ${correctLetter}) ${correctText}.<br>${q.explanation}</span>`;
+          fbDiv.className = 'feedback incorrect';
+        } else if (isCorrect) {
+          fbHtml = `✅ <strong>¡Correcto!</strong> ${q.explanation}`;
+          fbDiv.className = 'feedback correct';
+        } else {
+          fbHtml = `❌ <strong>Incorrecto.</strong> La respuesta correcta es ${correctLetter}) ${correctText}.<br>${q.explanation}`;
+          fbDiv.className = 'feedback incorrect';
+        }
+        fbDiv.innerHTML = fbHtml;
+      }
+      updateScoreDisplay(correctCount);
+      alert(`📊 Evaluación corregida.\nAciertos: ${correctCount} de 10 (${correctCount*10}%)\nRevisá los detalles en pantalla.`);
+    }
+
+    // Inicializar
+    function init() {
+      generateNewTest();
+    }
+
+    checkBtn.addEventListener('click', () => {
+      if (!currentQuestions.length) return;
+      correctEvaluation();
+    });
+
+    newTestBtn.addEventListener('click', () => {
+      generateNewTest();
+    });
+
+    init();
+  })();
+</script>
+</body>
+</html>
